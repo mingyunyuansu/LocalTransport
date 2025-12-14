@@ -2,6 +2,7 @@
 
 #include "protocal.h"
 #include "socket.h"
+#include <atomic>
 #include <string>
 
 namespace local_transport {
@@ -26,6 +27,7 @@ private:
   Socket socket_;
   void *file_content_;
   int span_num_;
+  std::atomic<size_t> total_sent_{0};
 };
 
 } // namespace local_transport

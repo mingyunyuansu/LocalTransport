@@ -3,7 +3,7 @@
 #include <ostream>
 const int kPort = 54321;
 const int kMaxFileNameLen = 256;
-const size_t kSpanSize = 256 * 1024 * 1024;
+const size_t kSpanSize = 1024 * 1024 * 1024;
 
 enum class HandShakeType { kHandShake = 0, kSpanHandShake = 1 };
 

@@ -65,9 +65,19 @@ bool Sender::Send() {
     size_t span_size = std::min(kSpanSize, file_size_ - i * kSpanSize);
     threads.emplace_back([this, i, span_size]() { SendOneSpan(i, span_size); });
   }
+  std::thread progress_thread([this]() {
+    // Log progress every second.
+    while (total_sent_ < file_size_) {
+      std::this_thread::sleep_for(std::chrono::seconds(1));
+      double progress = (double)total_sent_ / file_size_;
+      LOG << "Send progress: " << total_sent_ << "/" << file_size_ << " ("
+          << progress << "%)";
+    }
+  });
   for (auto &thread : threads) {
     thread.join();
   }
+  progress_thread.join();
   auto end = std::chrono::steady_clock::now();
   auto duration =
       std::chrono::duration_cast<std::chrono::milliseconds>(end - now);
@@ -109,6 +119,7 @@ bool Sender::SendOneSpan(int span_idx, size_t size) {
       std::abort();
     }
     sent += n;
+    total_sent_ += n;
   }
   close(connfd);
   return true;
